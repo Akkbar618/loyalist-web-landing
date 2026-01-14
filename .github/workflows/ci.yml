@@ -1,0 +1,49 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run Linting
+      run: npm run lint
+      continue-on-error: true
+
+    - name: Run Tests
+      run: npm test
+
+    - name: Build
+      run: npm run build
+      env:
+        # Fills mostly with dummy data for build process if env vars are required
+        VITE_WEB_APP_URL: "https://app.loyalist.app"
+        VITE_API_URL: "https://api.loyalist.app"
+        VITE_ENABLE_ANALYTICS: "false"
+        VITE_ENABLE_CHAT_WIDGET: "true"
+        VITE_FACEBOOK_URL: "https://facebook.com"
+        VITE_TWITTER_URL: "https://twitter.com"
+        VITE_INSTAGRAM_URL: "https://instagram.com"
+        VITE_TELEGRAM_URL: "https://t.me"
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: build
+        path: dist

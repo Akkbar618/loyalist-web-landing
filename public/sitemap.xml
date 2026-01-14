@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- Homepage - English (default) -->
+  <url>
+    <loc>https://loyalist.app/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://loyalist.app/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://loyalist.app/?lang=ru" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://loyalist.app/" />
+    <lastmod>2026-01-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://loyalist.app/privacy</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+</urlset>

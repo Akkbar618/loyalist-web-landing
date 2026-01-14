@@ -1,0 +1,16 @@
+# Loyalist - Café Loyalty System
+# https://loyalist.app
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://loyalist.app/sitemap.xml
+
+# Block access to admin/api paths (if any in future)
+Disallow: /api/
+Disallow: /admin/
+
+# Allow search engines to crawl everything else
+Allow: /*.js$
+Allow: /*.css$
