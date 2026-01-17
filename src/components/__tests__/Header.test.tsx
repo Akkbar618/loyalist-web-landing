@@ -3,10 +3,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Header from '../Header';
+import { LanguageProvider } from '../../contexts/LanguageContext';
 
 describe('Header', () => {
   const mockOnNavItemClick = vi.fn();
-  
+
   // Mock для window.scrollTo
   const mockScrollTo = vi.fn();
   Object.defineProperty(window, 'scrollTo', {
@@ -31,21 +32,25 @@ describe('Header', () => {
       writable: true
     });
 
-    render(<Header onNavItemClick={mockOnNavItemClick} />);
-    
+    render(
+      <LanguageProvider>
+        <Header onNavItemClick={mockOnNavItemClick} />
+      </LanguageProvider>
+    );
+
     const menuButton = screen.getByLabelText('Open menu');
-    
+
     // Открываем мобильное меню
     await user.click(menuButton);
-    
+
     // Проверяем, что скролл заблокирован
     expect(document.body.style.position).toBe('fixed');
     expect(document.body.style.top).toBe('-100px');
     expect(document.body.style.width).toBe('100%');
-    
+
     // Закрываем мобильное меню
     await user.click(menuButton);
-    
+
     // Проверяем, что скролл разблокирован
     expect(document.body.style.position).toBe('');
     expect(document.body.style.top).toBe('');
@@ -61,14 +66,18 @@ describe('Header', () => {
       writable: true
     });
 
-    render(<Header onNavItemClick={mockOnNavItemClick} />);
-    
+    render(
+      <LanguageProvider>
+        <Header onNavItemClick={mockOnNavItemClick} />
+      </LanguageProvider>
+    );
+
     const menuButton = screen.getByLabelText('Open menu');
-    
+
     // Открываем и закрываем мобильное меню
     await user.click(menuButton);
     await user.click(menuButton);
-    
+
     // Проверяем, что scrollTo вызван с правильными параметрами
     expect(mockScrollTo).toHaveBeenCalledWith(0, 250);
   });
@@ -80,21 +89,25 @@ describe('Header', () => {
       writable: true
     });
 
-    const { unmount } = render(<Header onNavItemClick={mockOnNavItemClick} />);
-    
+    const { unmount } = render(
+      <LanguageProvider>
+        <Header onNavItemClick={mockOnNavItemClick} />
+      </LanguageProvider>
+    );
+
     // Открываем мобильное меню
     const menuButton = screen.getByLabelText('Open menu');
     fireEvent.click(menuButton);
-    
+
     // Проверяем, что скролл заблокирован
     expect(document.body.style.position).toBe('fixed');
-    
+
     // Размонтируем компонент
     unmount();
-    
+
     // Проверяем, что стили очищены
     expect(document.body.style.position).toBe('');
     expect(document.body.style.top).toBe('');
     expect(document.body.style.width).toBe('');
   });
-}); 
+});

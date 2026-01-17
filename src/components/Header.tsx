@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
 import { config } from "@/lib/config";
@@ -14,6 +14,7 @@ const Header: React.FC<HeaderProps> = ({
   const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const scrollPositionRef = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,19 +28,16 @@ const Header: React.FC<HeaderProps> = ({
   useEffect(() => {
     if (isMenuOpen) {
       // Сохраняем текущую позицию скролла
-      const scrollY = window.scrollY;
+      scrollPositionRef.current = window.scrollY;
       document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
+      document.body.style.top = `-${scrollPositionRef.current}px`;
       document.body.style.width = '100%';
     } else {
       // Восстанавливаем скролл при закрытии меню
-      const scrollY = document.body.style.top;
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-      }
+      window.scrollTo(0, scrollPositionRef.current);
     }
 
     // Cleanup при размонтировании компонента

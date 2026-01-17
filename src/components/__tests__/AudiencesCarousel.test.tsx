@@ -51,14 +51,9 @@ describe('AudiencesCarousel', () => {
         expect(screen.getByText('whoWeServe')).toBeInTheDocument();
 
         // Check tabs/badges
-        expect(screen.getByText('forCafes')).toBeInTheDocument();
-        expect(screen.getByText('forInvestors')).toBeInTheDocument();
-        expect(screen.getByText('forCustomers')).toBeInTheDocument();
-
-        // Check carousel items
-        const tabs = screen.getAllByRole('button', { name: /for/i }); // Getting badges by generic button role logic might need adjustment if Badge doesn't use standard button role, but Badge typically renders a div.
-        // Actually Badge usually renders a div, let's use text matcher
-        expect(screen.getByText('forCafes')).toBeInTheDocument();
+        expect(screen.getAllByText('forCafes')[0]).toBeInTheDocument();
+        expect(screen.getAllByText('forInvestors')[0]).toBeInTheDocument();
+        expect(screen.getAllByText('forCustomers')[0]).toBeInTheDocument();
     });
 
     it('renders carousel content', () => {
