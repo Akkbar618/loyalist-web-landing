@@ -1,46 +1,58 @@
-import { describe, it, expect, vi } from 'vitest'
+
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import ChatWidget from './ChatWidget'
 
+// Mock useToast
+vi.mock('@/hooks/use-toast', () => ({
+  useToast: () => ({
+    toast: vi.fn()
+  })
+}))
+
 describe('ChatWidget', () => {
-  it('отображает кнопку чата', () => {
-    render(<ChatWidget />)
-    
-    expect(screen.getByRole('button')).toBeInTheDocument()
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
-  it('открывает чат при клике на кнопку', () => {
+  it('отображает кнопку открытия чата', () => {
     render(<ChatWidget />)
-    
-    const button = screen.getByRole('button')
+
+    expect(screen.getByRole('button', { name: /chat support/i })).toBeInTheDocument()
+  })
+
+  it('открывает окно чата при клике', () => {
+    render(<ChatWidget />)
+
+    const button = screen.getByRole('button', { name: /chat support/i })
     fireEvent.click(button)
-    
-    // Проверяем, что появилось окно чата
-    expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+    expect(screen.getByText('Loyalist Support')).toBeInTheDocument()
+    expect(screen.getByText('How can we help you today?')).toBeInTheDocument()
   })
 
-  it('закрывает чат при повторном клике на кнопку', () => {
+  it('отображает кнопку отправки сообщения', () => {
     render(<ChatWidget />)
-    
-    const button = screen.getByRole('button')
-    
+
     // Открываем чат
+    const button = screen.getByRole('button', { name: /chat support/i })
     fireEvent.click(button)
-    expect(screen.getByRole('dialog')).toBeInTheDocument()
-    
-    // Закрываем чат
-    fireEvent.click(button)
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+    expect(screen.getByRole('button', { name: /send message/i })).toBeInTheDocument()
   })
 
-  it('отображает форму отправки сообщения', () => {
+  it('закрывает чат при отправке сообщения', () => {
     render(<ChatWidget />)
-    
+
     // Открываем чат
-    fireEvent.click(screen.getByRole('button'))
-    
-    // Проверяем наличие формы
-    expect(screen.getByRole('textbox')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /send/i })).toBeInTheDocument()
+    const toggleButton = screen.getByRole('button', { name: /chat support/i })
+    fireEvent.click(toggleButton)
+
+    // Отправляем сообщение
+    const sendButton = screen.getByRole('button', { name: /send message/i })
+    fireEvent.click(sendButton)
+
+    // Проверяем, что чат закрылся (заголовка больше нет)
+    expect(screen.queryByText('Loyalist Support')).not.toBeInTheDocument()
   })
-}) 
+})

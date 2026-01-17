@@ -1,46 +1,53 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import BackToTopButton from './BackToTopButton'
 
 describe('BackToTopButton', () => {
-  const mockScrollTo = vi.fn()
-  
   beforeEach(() => {
-    // Мокаем window.scrollTo
-    window.scrollTo = mockScrollTo
-  })
-  
-  afterEach(() => {
+    // Reset scroll position
+    Object.defineProperty(window, 'scrollY', { value: 0, writable: true })
     vi.clearAllMocks()
   })
 
-  it('не отображается, когда страница в начале', () => {
+  it('присутствует в DOM но скрыта, когда страница в начале', () => {
     render(<BackToTopButton />)
-    
-    expect(screen.queryByRole('button')).not.toBeInTheDocument()
+
+    const button = screen.getByRole('button', { name: /back to top/i })
+    expect(button).toBeInTheDocument()
+    expect(button).toHaveClass('opacity-0')
+    expect(button).toHaveClass('pointer-events-none')
   })
 
-  it('отображается, когда страница прокручена', () => {
-    // Мокаем window.scrollY
-    Object.defineProperty(window, 'scrollY', { value: 500 })
-    
+  it('отображается при прокрутке вниз', () => {
     render(<BackToTopButton />)
-    
-    expect(screen.getByRole('button')).toBeInTheDocument()
+
+    // Simulate scroll
+    Object.defineProperty(window, 'scrollY', { value: 600 })
+    fireEvent.scroll(window)
+
+    const button = screen.getByRole('button', { name: /back to top/i })
+    expect(button).toHaveClass('opacity-100')
+    expect(button).not.toHaveClass('opacity-0')
   })
 
-  it('прокручивает страницу вверх при клике', () => {
-    // Мокаем window.scrollY
-    Object.defineProperty(window, 'scrollY', { value: 500 })
-    
+  it('прокручивает наверх при клике', () => {
+    // Mock scrollTo
+    const scrollToMock = vi.fn()
+    window.scrollTo = scrollToMock
+
     render(<BackToTopButton />)
-    
-    const button = screen.getByRole('button')
+
+    // Make visible first
+    Object.defineProperty(window, 'scrollY', { value: 600 })
+    fireEvent.scroll(window)
+
+    const button = screen.getByRole('button', { name: /back to top/i })
     fireEvent.click(button)
-    
-    expect(mockScrollTo).toHaveBeenCalledWith({
+
+    expect(scrollToMock).toHaveBeenCalledWith({
       top: 0,
       behavior: 'smooth'
     })
   })
-}) 
+})
